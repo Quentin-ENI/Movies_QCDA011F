@@ -4,17 +4,12 @@
 
     {# Ceci est un commentaire Twig #}
     <!--<p>Ceci est un commentaire HTML</p>-->
-    {% set firstName = "Martin" %}
-    {% set lastName = "Lawrence" %}
-    {% set birthdate = 1965 %}
     <h1>Bonjour {{ firstName }} {{ lastName | upper }}</h1>
     {% if birthdate < 1946 %}
         <p>Vous êtes né(e) avant la fin de la seconde guerre mondiale.</p>
     {% else %}
         <p>Vous êtes né(e) après la fin de la seconde guerre mondiale.</p>
     {% endif %}
-
-    {% set movies = ["Bad boys", "Big mamma", "Flic de haut vol"] %}
     <ul>
         {% for movie in movies %}
             <li>{{ movie }}</li>
