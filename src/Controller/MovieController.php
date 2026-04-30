@@ -12,22 +12,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route("/movies", name: "movies_")]
 final class MovieController extends AbstractController
 {
-//    private $moviesDB = [
-//        "Les Indestructibles",
-//        "Trainspotting",
-//        "Retour vers le futur",
-//        "Dancer in the dark",
-//        "Eternal sunshine of the spotless mind",
-//        "Men in Black",
-//        "Je suis une légende",
-//        "Big fish"
-//    ];
 
     #[Route('', name: 'list', methods: ['GET'])]
     public function list(MovieRepository $movieRepository): Response
     {
-//        $movies = $movieRepository->findAll();
-        $movies = $movieRepository->findContainsSubstring("tru");
+        $movies = $movieRepository->findAll();
+//        $movies = $movieRepository->findContainsSubstring("tru");
 
         return $this->render('movie/list.html.twig', [
             'movies' => $movies
