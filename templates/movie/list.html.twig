@@ -6,7 +6,14 @@
     <h1>Liste des films</h1>
     <ul>
     {% for movie in movies %}
-        <li>{{ movie.id }} : {{ movie.title }}</li>
+        <li>
+            {{ movie.id }} : {{ movie.title }} -
+            {% for category in movie.category %}
+                {{ category.name }}
+            {% else %}
+                Il n'y a pas de catégorie
+            {% endfor %}
+        </li>
     {% else %}
         <p>Il n'y a pas de film en base de données</p>
     {% endfor %}

@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Movie;
+use App\Form\MovieType;
 use App\Repository\MovieRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -16,7 +20,8 @@ final class MovieController extends AbstractController
     #[Route('', name: 'list', methods: ['GET'])]
     public function list(MovieRepository $movieRepository): Response
     {
-        $movies = $movieRepository->findAll();
+//        $movies = $movieRepository->findAll();
+        $movies = $movieRepository->findAllWithCategories();
 //        $movies = $movieRepository->findContainsSubstring("tru");
 
         return $this->render('movie/list.html.twig', [
@@ -33,15 +38,33 @@ final class MovieController extends AbstractController
         ]);
     }
 
-    #[Route('/create', methods: ['GET'])]
-    public function create(EntityManagerInterface $entityManager): Response {
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
         $movie = new Movie();
-        $movie->setTitle("Trainspotting");
-        $movie->setReleaseDate(1996);
+        $movieForm = $this->createForm(MovieType::class, $movie, [
+                'action' => $this->generateUrl('movies_create'),
+                'method' => 'POST'
+        ]);
+        $movieForm->handleRequest($request);
 
-        $entityManager->persist($movie);
-        $entityManager->flush();
+        if ($movieForm->isSubmitted() && $movieForm->isValid()) {
+            // Insérer en base de données
+            try {
+                $entityManager->persist($movie);
+                $entityManager->flush();
+                $this->addFlash('success', 'Le film a bien été ajouté');
 
-        return $this->redirectToRoute('movies_list');
+                return $this->redirectToRoute('movies_detail', ['id' => $movie->getId()]);
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Le film n'a pas été créé en base de données.\n".$e->getMessage());
+            }
+        }
+
+        return $this->render('movie/create.html.twig', [
+            'movieForm' => $movieForm
+        ]);
     }
 }

@@ -32,13 +32,20 @@ class MovieRepository extends ServiceEntityRepository
 
     // QueryBuilder
     public function findContainsSubstring(String $substring) {
-        $entityManager = $this->getEntityManager();
         // SELECT id, title, releaseDate FROM movies WHERE title LIKE '%tr%';
         $queryBuilder = $this->createQueryBuilder('movie');
         $queryBuilder->andWhere('movie.title LIKE :substring');
         $queryBuilder->setParameter('substring', '%'.$substring.'%');
         $query = $queryBuilder->getQuery();
 
+        return $query->getResult();
+    }
+
+    public function findAllWithCategories() {
+        $queryBuilder = $this->createQueryBuilder('movie');
+        $queryBuilder->leftJoin('movie.category', 'category');
+        $queryBuilder->addSelect('category');
+        $query = $queryBuilder->getQuery();
         return $query->getResult();
     }
 

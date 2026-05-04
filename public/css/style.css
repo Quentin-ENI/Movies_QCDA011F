@@ -2,3 +2,7 @@ h1 {
     background-color: darkblue;
     color: white;
 }
+
+.form-control {
+    background-color: lightblue;
+}

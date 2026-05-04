@@ -2,11 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Movie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class MovieFixtures extends Fixture
+class MovieFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -17,10 +19,20 @@ class MovieFixtures extends Fixture
             $movie = new Movie();
             $movie->setTitle($faker->words(3, true));
             $movie->setReleaseDate($faker->numberBetween(1900, 2020));
+            $movie->addCategory(
+                $this->getReference(
+                    CategoryFixtures::$categoryKeys[random_int(0, 3)], Category::class
+                )
+            );
 
             $manager->persist($movie);
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [CategoryFixtures::class];
     }
 }
