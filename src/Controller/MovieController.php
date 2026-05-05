@@ -12,12 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route("/movies", name: "movies_")]
 final class MovieController extends AbstractController
 {
 
     #[Route('', name: 'list', methods: ['GET'])]
+    #[IsGranted("ROLE_USER")]
     public function list(MovieRepository $movieRepository): Response
     {
 //        $movies = $movieRepository->findAll();
@@ -30,6 +32,7 @@ final class MovieController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function detail(int $id, MovieRepository $movieRepository): Response {
         $movie = $movieRepository->find($id);
 
@@ -39,6 +42,7 @@ final class MovieController extends AbstractController
     }
 
     #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function create(
         Request $request,
         EntityManagerInterface $entityManager,

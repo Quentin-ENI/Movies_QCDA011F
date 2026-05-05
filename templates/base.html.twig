@@ -14,7 +14,9 @@
                 <p>{{ message }}</p>
             {% endfor %}
         {% endfor %}
-        {% include 'shared/navigation.html.twig' %}
+        {% if app.user %}
+            {% include 'shared/navigation.html.twig' %}
+        {% endif %}
         {% block body %}{% endblock %}
     </body>
 </html>
