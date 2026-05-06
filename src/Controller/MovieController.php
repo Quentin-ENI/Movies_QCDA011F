@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Form\MovieType;
 use App\Repository\MovieRepository;
+use App\Services\MailService;
+use App\Services\MovieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Exception;
@@ -46,6 +48,7 @@ final class MovieController extends AbstractController
     public function create(
         Request $request,
         EntityManagerInterface $entityManager,
+        MovieService $movieService,
     ): Response {
         $movie = new Movie();
         $movieForm = $this->createForm(MovieType::class, $movie, [
@@ -57,8 +60,8 @@ final class MovieController extends AbstractController
         if ($movieForm->isSubmitted() && $movieForm->isValid()) {
             // Insérer en base de données
             try {
-                $entityManager->persist($movie);
-                $entityManager->flush();
+                $movieService->create($movie);
+
                 $this->addFlash('success', 'Le film a bien été ajouté');
 
                 return $this->redirectToRoute('movies_detail', ['id' => $movie->getId()]);
